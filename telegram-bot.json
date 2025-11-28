@@ -1,0 +1,181 @@
+{
+  "name": "My workflow",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.2,
+      "position": [
+        -928,
+        -272
+      ],
+      "id": "0dfff2dc-1c63-4b7a-bd41-448570f53d15",
+      "name": "Telegram Trigger",
+      "webhookId": "6fcb208e-9559-4659-b382-4dc51df7e9fb",
+      "credentials": {
+        "telegramApi": {
+          "id": "tPXgCgbjZ5Hu2mP0",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "={{ $json.message.text }}",
+        "hasOutputParser": true,
+        "options": {
+          "systemMessage": "You are a helpful assistant,\nwill keep ypur rensponses precise on point and you will give me every answre to the query in to 3 to 4 line itself,dont type large paragraphs to the bAST EXPERT IN THE WORLD and than giv mre the answer see towords it that you are a bit chit chatty."
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3,
+      "position": [
+        -656,
+        -272
+      ],
+      "id": "331c40aa-a215-4bde-9068-bb6bd96876dd",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -704,
+        -48
+      ],
+      "id": "1d792569-6f1d-48f8-99fa-f35d3f527a6a",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "BIIuiPYlnUzLpAWk",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "={{ $json.message.chat.id }}"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [
+        -576,
+        -48
+      ],
+      "id": "531c8b64-b0b3-4ca1-b35d-e320d1ff93e5",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.toolCalculator",
+      "typeVersion": 1,
+      "position": [
+        -448,
+        -48
+      ],
+      "id": "01e953b2-df21-4274-be17-ac99dadeaeda",
+      "name": "Calculator"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+        "text": "={{ $json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        -304,
+        -272
+      ],
+      "id": "a095b294-85e7-49bd-9b64-1218175828b4",
+      "name": "Send a text message",
+      "webhookId": "83bf3b05-3d9a-4e20-a6a3-d6bb1b4758c2",
+      "credentials": {
+        "telegramApi": {
+          "id": "tPXgCgbjZ5Hu2mP0",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Simple Memory": {
+      "ai_memory": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_memory",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Calculator": {
+      "ai_tool": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_tool",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "d768981e-a239-4d1f-a4c8-3b38d56bb27a",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c766d0532f6d2d6b77b2ee98b327c43eb1221acb22aca5d0a361e4f51125f49c"
+  },
+  "id": "tSR3aXOQB2tzVQ2F",
+  "tags": []
+}
